@@ -82,3 +82,8 @@ export function clearMockSession(): void {
   if (typeof window === "undefined") return;
   sessionStorage.removeItem(MOCK_SESSION_KEY);
 }
+
+/** Members list for admin (no passwords). Replace with DB query in production. */
+export function getMockMembers(): MockSession[] {
+  return MOCK_USERS.map(({ password: _, ...member }) => member);
+}

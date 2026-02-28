@@ -1,17 +1,65 @@
-import Link from "next/link";
+"use client";
 
-const NAV = [
-  { label: "Event types", href: "/dashboard", icon: LinkIcon(), active: true }
-//   { label: "Bookings", href: "#", icon: CalendarIcon() },
-//   { label: "Availability", href: "#", icon: ClockIcon() },
-//   { label: "Teams", href: "#", icon: UsersIcon() },
-//   { label: "Apps", href: "#", icon: GridIcon() },
-//   { label: "Routing", href: "#", icon: RouteIcon() },
-//   { label: "Workflows", href: "#", icon: BoltIcon() },
-//   { label: "Insights", href: "#", icon: ChartIcon() },
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const DASHBOARD_NAV = [
+  { label: "Event types", href: "/dashboard", icon: "link" },
 ];
 
+const ADMIN_NAV = [
+  {
+    section: "📊 Overview",
+    items: [
+      { label: "Dashboard", href: "/admin", icon: "chart" },
+    ],
+  },
+  {
+    section: "👥 Member Lifecycle",
+    items: [
+      { label: "All Members", href: "/admin/members", icon: "users" },
+      { label: "Plan", href: "/admin/plan", icon: "chart" },
+      { label: "Renewals & Retention", href: "/admin/renewals", icon: "users" },
+    ],
+  },
+  {
+    section: "🎯 Engagement & Value",
+    items: [
+      { label: "Events", href: "/admin/events", icon: "calendar" },
+      { label: "Participation Tracking", href: "/admin/participation", icon: "users" },
+      { label: "Impact Metrics", href: "/admin/impact-metrics", icon: "chart" },
+    ],
+  },
+  {
+    section: "💳 Revenue & Plans",
+    items: [
+      { label: "Membership Plans", href: "/admin/plans", icon: "chart" },
+      { label: "Billing", href: "/admin/billing", icon: "chart" },
+      { label: "Discounts", href: "/admin/discounts", icon: "chart" },
+    ],
+  },
+  {
+    section: "⚙ System",
+    items: [
+      { label: "Admin Roles", href: "/admin/admins", icon: "users" },
+      { label: "Settings", href: "/admin/settings", icon: "settings" },
+      { label: "Audit Log", href: "/admin/audit-log", icon: "chart" },
+    ],
+  },
+];
+
+const ICONS = {
+  link: LinkIcon,
+  chart: ChartIcon,
+  users: UsersIcon,
+  calendar: CalendarIcon,
+  settings: SettingsIcon,
+};
+
 export default function Sidebar() {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
+
   return (
     <aside className="w-72 border-r border-zinc-200 bg-zinc-50 min-h-screen">
       {/* top user row */}
@@ -26,29 +74,77 @@ export default function Sidebar() {
         </div>
 
         <div className="flex items-center gap-2 text-zinc-500">
-          <button className="p-2 rounded-lg hover:bg-zinc-100">{SearchIcon()}</button>
-          <button className="p-2 rounded-lg hover:bg-zinc-100">{SettingsIcon()}</button>
+          <button className="p-2 rounded-lg hover:bg-zinc-100"><SearchIcon /></button>
+          <button className="p-2 rounded-lg hover:bg-zinc-100"><SettingsIcon /></button>
         </div>
       </div>
 
       {/* nav */}
-      <nav className="p-3 space-y-1">
-        {NAV.map((item) => (
-          <Link
-            key={item.label}
-            href={item.href}
-            className={[
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm",
-              item.active ? "bg-zinc-200/70 text-zinc-900" : "text-zinc-700 hover:bg-zinc-200/40",
-            ].join(" ")}
-          >
-            <span className="text-zinc-600">{item.icon}</span>
-            <span>{item.label}</span>
-            {item.label === "Apps" || item.label === "Insights" ? (
-              <span className="ml-auto text-xs text-zinc-500">›</span>
-            ) : null}
-          </Link>
-        ))}
+      <nav className="p-3 overflow-y-auto max-h-[calc(100vh-4rem)]">
+        {!isAdmin ? (
+          <div className="space-y-1">
+            <Link
+              href="/admin"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-200/40"
+            >
+              <span className="text-zinc-600"><ChartIcon /></span>
+              <span>Admin</span>
+            </Link>
+            {DASHBOARD_NAV.map((item) => {
+              const active = pathname === item.href;
+              const Icon = ICONS[item.icon] || LinkIcon;
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={[
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm",
+                    active ? "bg-zinc-200/70 text-zinc-900" : "text-zinc-700 hover:bg-zinc-200/40",
+                  ].join(" ")}
+                >
+                  <span className="text-zinc-600"><Icon /></span>
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-200/40"
+            >
+              <span className="text-zinc-600"><LinkIcon /></span>
+              <span>Dashboard</span>
+            </Link>
+            {ADMIN_NAV.map((group) => (
+              <div key={group.section}>
+                <div className="px-3 py-1.5 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  {group.section}
+                </div>
+                <div className="space-y-0.5">
+                  {group.items.map((item) => {
+                    const active = pathname === item.href;
+                    const Icon = ICONS[item.icon] || ChartIcon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={[
+                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm",
+                          active ? "bg-zinc-200/70 text-zinc-900" : "text-zinc-700 hover:bg-zinc-200/40",
+                        ].join(" ")}
+                      >
+                        <span className="text-zinc-600"><Icon /></span>
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </nav>
 
       {/* bottom links */}
@@ -73,108 +169,98 @@ export default function Sidebar() {
   );
 }
 
-/* icons */
+/* icons — minimal, 1.5 stroke */
+const iconProps = { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", "aria-hidden": true, stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" };
+
 function SearchIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        d="M16.2 16.2 21 21"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+    <svg {...iconProps}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-4-4" />
     </svg>
   );
 }
 
 function SettingsIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        d="M19.4 15a7.97 7.97 0 0 0 .1-1 7.97 7.97 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a8.4 8.4 0 0 0-1.7-1l-.3-2.6h-4l-.3 2.6a8.4 8.4 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7.97 7.97 0 0 0-.1 1 7.97 7.97 0 0 0 .1 1l-2 1.5 2 3.5 2.4-1a8.4 8.4 0 0 0 1.7 1l.3 2.6h4l.3-2.6a8.4 8.4 0 0 0 1.7-1l2.4 1 2-3.5-2-1.5Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
+    <svg {...iconProps}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
     </svg>
   );
 }
 
 function LinkIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <svg {...iconProps}>
+      <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" />
+      <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" />
     </svg>
   );
 }
+
 function CalendarIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M7 3v3M17 3v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M4 9h16" stroke="currentColor" strokeWidth="2"/>
-      <path d="M6 5h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="2"/>
+    <svg {...iconProps}>
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
     </svg>
   );
 }
+
 function ClockIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" strokeWidth="2"/>
-      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <svg {...iconProps}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
     </svg>
   );
 }
+
 function UsersIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
-      <path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" strokeWidth="2"/>
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2"/>
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2"/>
+    <svg {...iconProps}>
+      <circle cx="9" cy="8" r="4" />
+      <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+      <path d="M16 8a4 4 0 1 1 0 8" />
+      <path d="M21 20c0-2.2-1.2-4-3-5" />
     </svg>
   );
 }
+
 function GridIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M4 4h7v7H4V4Zm9 0h7v7h-7V4ZM4 13h7v7H4v-7Zm9 0h7v7h-7v-7Z" stroke="currentColor" strokeWidth="2"/>
+    <svg {...iconProps}>
+      <rect x="3" y="3" width="7" height="7" />
+      <rect x="14" y="3" width="7" height="7" />
+      <rect x="3" y="14" width="7" height="7" />
+      <rect x="14" y="14" width="7" height="7" />
     </svg>
   );
 }
+
 function RouteIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M6 18h6a4 4 0 0 0 4-4V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M6 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" stroke="currentColor" strokeWidth="2"/>
-      <path d="M16 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" stroke="currentColor" strokeWidth="2"/>
+    <svg {...iconProps}>
+      <path d="M6 18h6a4 4 0 0 0 4-4V6" />
+      <circle cx="6" cy="18" r="2" />
+      <circle cx="16" cy="4" r="2" />
     </svg>
   );
 }
+
 function BoltIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+    <svg {...iconProps}>
+      <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z" />
     </svg>
   );
 }
+
 function ChartIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M4 19V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M10 19V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M16 19V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M22 19H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <svg {...iconProps}>
+      <path d="M4 18v-4M10 18v-6M16 18v-2M22 18H2" />
     </svg>
   );
 }

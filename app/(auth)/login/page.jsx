@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaGoogle } from "react-icons/fa";
+import { validateMockLogin, setMockUser, ROLES } from "@/lib/mock-auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,10 +27,20 @@ export default function LoginPage() {
     // POC: simulate request delay
     await new Promise((r) => setTimeout(r, 700));
 
-    // TODO: replace with Supabase auth later
-    // For now, always "succeed"
+    const user = validateMockLogin({ email: email.trim(), password });
+    if (!user) {
+      setError("Invalid email or password.");
+      setLoading(false);
+      return;
+    }
+
+    setMockUser(user);
     setLoading(false);
-    router.push("/dashboard");
+    if (user.role === ROLES.ADMIN) {
+      router.push("/admin");
+    } else {
+      router.push("/dashboard");
+    }
   }
 
   async function handleGoogleLogin() {

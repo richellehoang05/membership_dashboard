@@ -1,14 +1,14 @@
 "use client";
 
 import AdminSection from "@/components/AdminSection";
-import { getMockUser } from "@/lib/mock-auth";
+import { getMockSession } from "@/lib/mock-users";
 import { useEffect, useState } from "react";
 
 export default function AdminPage() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    setUser(getMockUser());
+    setUser(getMockSession());
   }, []);
 
   return (

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { getMockSession } from "@/lib/mock-users";
 import { usePathname } from "next/navigation";
 
 const DASHBOARD_NAV = [
@@ -56,20 +58,43 @@ const ICONS = {
   settings: SettingsIcon,
 };
 
+function getInitial(email) {
+  if (!email) return "?";
+  const part = email.split("@")[0];
+  return (part && part[0]) ? part[0].toUpperCase() : "?";
+}
+
 export default function Sidebar() {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    setSession(getMockSession());
+  }, []);
+
+  const displayLabel = session ? session.displayName : "Not logged in";
+  const emailLabel = session ? session.email : "";
+  const initial = getInitial(session?.email);
 
   return (
     <aside className="w-72 border-r border-zinc-200 bg-zinc-50 min-h-screen">
       {/* top user row */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-zinc-200 bg-white">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="h-8 w-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-semibold">
-            H
+          <div className="h-8 w-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-semibold shrink-0">
+            {initial}
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-medium truncate">Richelle Ho...</div>
+            <div className="text-sm font-medium truncate">{displayLabel}</div>
+            {emailLabel ? (
+              <div className="text-xs text-zinc-500 truncate">{emailLabel}</div>
+            ) : null}
+            {session?.membershipType ? (
+              <span className="inline-block mt-0.5 text-[10px] font-medium text-zinc-600 bg-zinc-200 px-1.5 py-0.5 rounded">
+                {session.membershipType}
+              </span>
+            ) : null}
           </div>
         </div>
 

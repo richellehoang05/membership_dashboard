@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaGoogle } from "react-icons/fa";
+import { validateMockUser, setMockSession } from "@/lib/mock-users";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,8 +27,14 @@ export default function LoginPage() {
     // POC: simulate request delay
     await new Promise((r) => setTimeout(r, 700));
 
-    // TODO: replace with Supabase auth later
-    // For now, always "succeed"
+    const user = validateMockUser(email.trim(), password);
+    if (!user) {
+      setLoading(false);
+      setError("Invalid email or password.");
+      return;
+    }
+
+    setMockSession(user);
     setLoading(false);
     router.push("/dashboard");
   }

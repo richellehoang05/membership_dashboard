@@ -3,7 +3,7 @@
  * Replace with Supabase (or other) auth in production; do not store real passwords.
  */
 
-export const MEMBERSHIP_TYPES = ["Business", "Government"] as const;
+export const MEMBERSHIP_TYPES = ["Business", "Government", "Admin"] as const;
 export type MembershipType = (typeof MEMBERSHIP_TYPES)[number];
 
 export const ROLES = { ADMIN: "admin", MEMBER: "member" } as const;
@@ -19,6 +19,13 @@ export interface MockUser {
 
 /** Mock users – development only; remove when switching to real auth. */
 export const MOCK_USERS: MockUser[] = [
+  {
+    email: "admin@cic.com",
+    password: "adminaccount",
+    membershipType: "Business",
+    displayName: "CIC Admin",
+    role: "admin",
+  },
   {
     email: "hoanghan0613@gmail.com",
     password: "businessaccount",

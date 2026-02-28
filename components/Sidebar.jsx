@@ -108,13 +108,6 @@ export default function Sidebar() {
       <nav className="p-3 overflow-y-auto max-h-[calc(100vh-4rem)]">
         {!isAdmin ? (
           <div className="space-y-1">
-            <Link
-              href="/admin"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-200/40"
-            >
-              <span className="text-zinc-600"><ChartIcon /></span>
-              <span>Admin</span>
-            </Link>
             {DASHBOARD_NAV.map((item) => {
               const active = pathname === item.href;
               const Icon = ICONS[item.icon] || LinkIcon;

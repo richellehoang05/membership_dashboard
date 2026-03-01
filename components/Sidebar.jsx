@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 
 const DASHBOARD_NAV = [
   { label: "Event types", href: "/dashboard", icon: "link" },
+  { label: "Resources", href: "/dashboard/resources", icon: "book" },
 ];
 
 const ADMIN_NAV = [
@@ -52,6 +53,7 @@ const ADMIN_NAV = [
 
 const ICONS = {
   link: LinkIcon,
+  book: BookIcon,
   chart: ChartIcon,
   users: UsersIcon,
   calendar: CalendarIcon,
@@ -213,6 +215,16 @@ function LinkIcon() {
     <svg {...iconProps}>
       <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" />
       <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" />
+    </svg>
+  );
+}
+
+function BookIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      <path d="M8 7h8M8 11h8" />
     </svg>
   );
 }

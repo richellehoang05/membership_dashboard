@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 
 const DASHBOARD_NAV = [
   { label: "Event types", href: "/dashboard", icon: "link" },
+  { label: "Membership plan", href: "/dashboard/membership", icon: "chart" },
+  { label: "Progress Tasks", href: "/dashboard/progress", icon: "progress" },
   { label: "Resources", href: "/dashboard/resources", icon: "book" },
 ];
 
@@ -15,14 +17,6 @@ const ADMIN_NAV = [
     section: "📊 Overview",
     items: [
       { label: "Dashboard", href: "/admin", icon: "chart" },
-    ],
-  },
-  {
-    section: "👥 Member Lifecycle",
-    items: [
-      { label: "All Members", href: "/admin/members", icon: "users" },
-      { label: "Plan", href: "/admin/plan", icon: "chart" },
-      { label: "Renewals & Retention", href: "/admin/renewals", icon: "users" },
     ],
   },
   {
@@ -54,6 +48,7 @@ const ADMIN_NAV = [
 const ICONS = {
   link: LinkIcon,
   book: BookIcon,
+  progress: ProgressIcon,
   chart: ChartIcon,
   users: UsersIcon,
   calendar: CalendarIcon,
@@ -92,7 +87,7 @@ export default function Sidebar() {
             {emailLabel ? (
               <div className="text-xs text-zinc-500 truncate">{emailLabel}</div>
             ) : null}
-            {session?.membershipType ? (
+            {session?.membershipType && session?.role !== "admin" ? (
               <span className="inline-block mt-0.5 text-[10px] font-medium text-zinc-600 bg-zinc-200 px-1.5 py-0.5 rounded">
                 {session.membershipType}
               </span>
@@ -130,13 +125,6 @@ export default function Sidebar() {
           </div>
         ) : (
           <div className="space-y-4">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-200/40"
-            >
-              <span className="text-zinc-600"><LinkIcon /></span>
-              <span>Dashboard</span>
-            </Link>
             {ADMIN_NAV.map((group) => (
               <div key={group.section}>
                 <div className="px-3 py-1.5 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
@@ -225,6 +213,15 @@ function BookIcon() {
       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
       <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
       <path d="M8 7h8M8 11h8" />
+    </svg>
+  );
+}
+
+function ProgressIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M9 11l3 3L22 4" />
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
     </svg>
   );
 }

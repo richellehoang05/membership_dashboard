@@ -1,6 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { getMockSession } from "@/lib/mock-users";
 import Link from "next/link";
+import GovernmentResources from "@/components/GovernmentResources";
 
 const RESEARCH_ITEMS = [
   {
@@ -174,6 +177,16 @@ function ResourceCard({ item }) {
 }
 
 export default function ResourcesPage() {
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    setSession(getMockSession());
+  }, []);
+
+  if (session?.membershipType === "Government") {
+    return <GovernmentResources />;
+  }
+
   return (
     <div className="max-w-5xl">
       <div className="mb-8">
